@@ -27,3 +27,4 @@ class student():
     
 O1 = student()
 O1.update()
+O1.printall
