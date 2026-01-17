@@ -18,6 +18,8 @@ MaxBullets = 3
 ShipWidth = 55
 ShipHeight = 40
 FPS = 60
+YellowHit = pygame.USEREVENT + 1
+RedHit = pygame.USEREVENT + 2
 #Yellow Ship on the left facing right (90), Red Ship on the right facing left (270) 
 YellowShip_img = pygame.image.load("YellowShip.jpg")
 YellowShip = pygame.transform.rotate(pygame.transform.scale(YellowShip_img, (ShipWidth, ShipHeight)), 90)
@@ -50,3 +52,38 @@ def red_movement(keys_pressed, red):
         red.y -= ShipVelocity
     if keys_pressed[pygame.K_s] and red.y + ShipVelocity + red.height < HEIGHT - 15:
         red.y += ShipVelocity
+
+def yellow_movement(keys_pressed, yellow):
+    if keys_pressed[pygame.K_LEFT] and yellow.x - ShipVelocity > Split.width:
+        yellow.x -= ShipVelocity
+    if keys_pressed[pygame.K_RIGHT] and yellow.x + ShipVelocity + yellow.width < WIDTH:
+        yellow.x += ShipVelocity
+    if keys_pressed[pygame.K_UP] and yellow.y - ShipVelocity > 0:
+        yellow.y -= ShipVelocity
+    if keys_pressed[pygame.K_DOWN] and yellow.y + ShipVelocity + yellow.height < HEIGHT - 15:
+        yellow.y += ShipVelocity
+
+def bullet_move(yellow_bullets, red_bullets, red, yellow):
+    for bullet in yellow_bullets:
+        bullet.x -= BulletVelocity
+        if red.colliderect(bullet):
+            pygame.event.post(pygame.event.Event(RedHit))
+            yellow_bullets.remove(bullet)
+
+        elif bullet.x < 0:
+            yellow_bullets.remove(bullet)
+
+    for bullet in red_bullets:
+        bullet.x += BulletVelocity
+        if yellow.colliderect(bullet):
+            pygame.event.post(pygame.event.Event(YellowHit))
+            red_bullets.remove(bullet)
+        
+        elif bullet.x > WIDTH:
+            red_bullets.remove(bullet)
+
+def win_display(text):
+    drawtext = WinFont.render(text, 1, White)
+    dsurface.blit(drawtext, (WIDTH/2 - drawtext.get_width/2, HEIGHT/2 - drawtext.get_height/2))
+    pygame.display.update()
+    pygame.time.delay(5000)
