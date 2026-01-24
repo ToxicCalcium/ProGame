@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 
 pygame.font.init()
 WIDTH = 900
@@ -87,3 +87,38 @@ def win_display(text):
     dsurface.blit(drawtext, (WIDTH/2 - drawtext.get_width/2, HEIGHT/2 - drawtext.get_height/2))
     pygame.display.update()
     pygame.time.delay(5000)
+
+def main():
+    red = pygame.Rect(700, HEIGHT/2, ShipWidth, ShipHeight)
+    yellow = pygame.Rect(100, HEIGHT/2, ShipWidth, ShipHeight)
+    yellow_bullets = []
+    red_bullets = []
+    red_health = 10
+    yellow_health = 10
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and len(yellow_bullets) < MaxBullets:
+                    bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height//2-2, 10, 5)
+                    yellow_bullets.append(bullet)
+                if event.key == pygame.K_LCTRL and len(red_bullets) < MaxBullets:
+                    bullet = pygame.Rect(red.x, red.y + red.height//2-2, 10, 5)
+                    red_bullets.append(bullet)
+            if event.type == RedHit:
+                red_health = red_health - 1
+            if event.type == YellowHit:
+                yellow_health = yellow_health - 1
+        win_text = ""
+        if red_health <=0:
+            win_text = "yellow win"
+        if yellow_health <=0:
+            win_text = "red win"
+        if win_text != "":
+            win_display(win_text)
+            break
