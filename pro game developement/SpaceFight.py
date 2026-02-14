@@ -28,13 +28,13 @@ RedShip = pygame.transform.rotate(pygame.transform.scale(RedShip_img, (ShipWidth
 Spacebg_img = pygame.image.load("SpaceGamebg.jpg")
 Spacebg = pygame.transform.scale(Spacebg_img, (WIDTH, HEIGHT))
 
-def draw_window(red, yellow, red_bullets, yellow_bullets, red_hp, yellow_hp):
+def draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health):
     dsurface.blit(Spacebg, (0,0))
     pygame.draw.rect(dsurface, White, Split)
-    red_health_text = HealthFont.render("Health: " + str(red_hp), 1, Red)
-    yellow_health_text = HealthFont.render("Health: " + str(yellow_hp), 1, Yellow)
-    dsurface.blit(red_health_text, (15,15))
-    dsurface.blit(yellow_health_text, ((WIDTH - 15), 15))
+    red_health_text = HealthFont.render("Health: " + str(red_health), 1, Red)
+    yellow_health_text = HealthFont.render("Health: " + str(yellow_health), 1, Yellow)
+    dsurface.blit(red_health_text, (720,15))
+    dsurface.blit(yellow_health_text, (15, 15))
     dsurface.blit(RedShip, (red.x, red.y))
     dsurface.blit(YellowShip, (yellow.x, yellow.y))
     for bullet in red_bullets:
@@ -44,9 +44,9 @@ def draw_window(red, yellow, red_bullets, yellow_bullets, red_hp, yellow_hp):
     pygame.display.update()
 
 def red_movement(keys_pressed, red):
-    if keys_pressed[pygame.K_a] and red.x - ShipVelocity > 0:
+    if keys_pressed[pygame.K_a] and red.x - ShipVelocity > Split.x:
         red.x -= ShipVelocity
-    if keys_pressed[pygame.K_d] and red.x + ShipVelocity + red.width < Split.x:
+    if keys_pressed[pygame.K_d] and red.x + ShipVelocity + red.width < WIDTH:
         red.x += ShipVelocity
     if keys_pressed[pygame.K_w] and red.y - ShipVelocity > 0:
         red.y -= ShipVelocity
@@ -54,9 +54,9 @@ def red_movement(keys_pressed, red):
         red.y += ShipVelocity
 
 def yellow_movement(keys_pressed, yellow):
-    if keys_pressed[pygame.K_LEFT] and yellow.x - ShipVelocity > Split.width:
+    if keys_pressed[pygame.K_LEFT] and yellow.x - ShipVelocity > 0:
         yellow.x -= ShipVelocity
-    if keys_pressed[pygame.K_RIGHT] and yellow.x + ShipVelocity + yellow.width < WIDTH:
+    if keys_pressed[pygame.K_RIGHT] and yellow.x + ShipVelocity + yellow.width < Split.x:
         yellow.x += ShipVelocity
     if keys_pressed[pygame.K_UP] and yellow.y - ShipVelocity > 0:
         yellow.y -= ShipVelocity
@@ -65,7 +65,7 @@ def yellow_movement(keys_pressed, yellow):
 
 def bullet_move(yellow_bullets, red_bullets, red, yellow):
     for bullet in yellow_bullets:
-        bullet.x -= BulletVelocity
+        bullet.x += BulletVelocity
         if red.colliderect(bullet):
             pygame.event.post(pygame.event.Event(RedHit))
             yellow_bullets.remove(bullet)
@@ -74,7 +74,7 @@ def bullet_move(yellow_bullets, red_bullets, red, yellow):
             yellow_bullets.remove(bullet)
 
     for bullet in red_bullets:
-        bullet.x += BulletVelocity
+        bullet.x -= BulletVelocity
         if yellow.colliderect(bullet):
             pygame.event.post(pygame.event.Event(YellowHit))
             red_bullets.remove(bullet)
@@ -84,13 +84,14 @@ def bullet_move(yellow_bullets, red_bullets, red, yellow):
 
 def win_display(text):
     drawtext = WinFont.render(text, 1, White)
-    dsurface.blit(drawtext, (WIDTH/2 - drawtext.get_width/2, HEIGHT/2 - drawtext.get_height/2))
+    dsurface.blit(drawtext, (WIDTH/2 - drawtext.get_width()/2, HEIGHT/2 - drawtext.get_height()/2))
     pygame.display.update()
     pygame.time.delay(5000)
 
 def main():
     red = pygame.Rect(700, HEIGHT/2, ShipWidth, ShipHeight)
     yellow = pygame.Rect(100, HEIGHT/2, ShipWidth, ShipHeight)
+    bullets = []
     yellow_bullets = []
     red_bullets = []
     red_health = 10
@@ -122,3 +123,12 @@ def main():
         if win_text != "":
             win_display(win_text)
             break
+        keys_pressed = pygame.key.get_pressed()
+        yellow_movement(keys_pressed, yellow)
+        red_movement(keys_pressed, red)
+        bullet_move(yellow_bullets, red_bullets, red, yellow)
+        draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health)
+    main()
+
+if __name__ == "__main__":
+    main()
