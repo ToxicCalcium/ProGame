@@ -4,6 +4,7 @@ pygame.init()
 WIDTH = 600
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+fuel = 5000
 pygame.display.set_caption("Rocket Game")
 
 class Player(pygame.sprite.Sprite):
@@ -14,17 +15,22 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() #creates hitbox for collision, movement detection and other events
     
     def update(self, pressed_keys):
+        global fuel
         if pressed_keys[pygame.K_UP]:
             self.rect.move_ip(0, -5) #moves 0 pixels horizontally and 5 pixels up vertically (move.ip means move in place)
+            fuel = fuel - 1
         
         if pressed_keys[pygame.K_DOWN]:
             self.rect.move_ip(0, 5)
+            fuel = fuel - 1
         
         if pressed_keys[pygame.K_LEFT]:
             self.rect.move_ip(-5, 0)
+            fuel = fuel - 1
         
         if pressed_keys[pygame.K_RIGHT]:
             self.rect.move_ip(5, 0)
+            fuel = fuel - 1
         
         #Setting screen boundary for player
         if self.rect.left < 0:
@@ -40,6 +46,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = HEIGHT
 
 sprites = pygame.sprite.Group()
+font = pygame.font.SysFont("Comic Sans", 40)
 def startGame():
     player = Player()
     sprites.add(player)
@@ -55,6 +62,11 @@ def startGame():
         Spacebg = pygame.transform.scale(Spacebg_img, (WIDTH, HEIGHT))
         screen.blit(Spacebg, (0,0))
         sprites.draw(screen)
+        fueltxt = font.render("Fuel: " + str(fuel), True, (255,0,0))
+        screen.blit(fueltxt, (400, 25))
+        if fuel == 0:
+            pygame.quit()
+            exit()
         pygame.display.update()
 
 startGame()
