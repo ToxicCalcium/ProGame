@@ -29,3 +29,36 @@ class pipe:
     
     def move(self):
         self.x -= 4
+    
+    def draw(self):
+        pygame.draw.rect(screen, (0, 255, 0), (self.x, 0, 50, self.height - 80))
+        pygame.draw.rect(screen, (0, 255, 0), (self.x, self.height+80, 50, 600))
+    
+    def collide(self, bird):
+        if bird.x + 15 > self.x and bird.x - 15 < self.x + 50:
+            if bird.y - 15 < self.height - 80 or bird.y + 15 > self.height + 80:
+                return True
+        return False
+
+flappyBird = bird()
+greenPipe = pipe()
+running = True
+while running:
+    clock.tick(60)
+    screen.fill((0, 0, 255))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.K_SPACE:
+            flappyBird.jump()
+    flappyBird.birdmove()
+    greenPipe.move()
+    if pipe.x < -50:
+        greenPipe = pipe()
+    if greenPipe.collide(flappyBird) or flappyBird.y > HEIGHT:
+        running = False
+    
+    flappyBird.draw()
+    greenPipe.draw()
+
+    pygame.display.update()
