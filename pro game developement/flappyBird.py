@@ -43,17 +43,18 @@ class pipe:
 flappyBird = bird()
 greenPipe = pipe()
 running = True
-while running:
+while running: 
     clock.tick(60)
     screen.fill((0, 0, 255))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-        elif event.type == pygame.K_SPACE:
-            flappyBird.jump()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                flappyBird.jump()
     flappyBird.birdmove()
     greenPipe.move()
-    if pipe.x < -50:
+    if greenPipe.x < -50:
         greenPipe = pipe()
     if greenPipe.collide(flappyBird) or flappyBird.y > HEIGHT:
         running = False
@@ -62,3 +63,5 @@ while running:
     greenPipe.draw()
 
     pygame.display.update()
+
+pygame.quit()
